@@ -179,3 +179,39 @@ CREATE TABLE BATCH_STEP_EXECUTION_CONTEXT (
   SERIALIZED_CONTEXT CLOB                   -- 직렬화(serialized)된 전체 컨텍스트
 );
 ```
+
+
+### Job
+Job은 배치 계층 구조에서 가장 상위에 있는 개념으로 하나의 배치작업 자체를 의미한다. 
+Job Configuration 을 통해 생성되는 객체 단위로서 배치작업을 어떻게 구성하고 실행할 것인지를 전체적으로 설정하고 명세해 놓은 객체이다. 최상위 인터페이스이며 스프링 배치가 기본 구현체를 제공한다.
+Job은 Step을 여러개 포함하고 있다. 최소한 하나의 Step은 포함 해야한다.
+
+#### 기본 구현체
+
+- SimpleJob
+  - **순차적으로** `Step`을 실행시키는 Job
+  - 모든 `Job`에서 유용하게 사용할 수 있는 표준 기능을 갖고 있다
+  - `Step`을 포함하고 있는 일종의 컨테이너
+- FlowJob
+  - **특정한 조건과 흐름**에 따라 `Step`을 구성하여 실행시키는 Job
+  - `Flow`객체를 실행시켜서 작업을 진행한다
+
+배치를 실행시키는 주체는 `JobLauncher`라는 클래스이다, 이때 실행시킬 때 필요한 인자로 `Job객체`와 `JobParameters라는` 도메인 객체의 인자가 필요하다
+
+
+### JobInstance
+
+Job, Step, flow가 실행이 되고 수행이 되면 그 단계마다 메타데이터(실행 상태정보를 담은) 데이터 베이스의 메타데이터들을 저장하는 용도로 수행하는 도메인이다. <br>
+Job이 실행될 때 생성되는 Job의 논리적 실행 단위 객체로서 고유하게 식별 가능한 작업 실행을 나타낸다. <br>
+Job의 설정과 구성은 동일하지만 Job이 실행되는 시점에 처리하는 내용은 다르기 때문에 Job의 실행을 구분해야 한다.
+
+- 처음 시작하는 Job + JobParameter 일 경우 새로운 JobInstance를 생성
+- 이전과 동일한 Job + JobParameter 로 실행할 경우 이미 존재하는 JobInstance를 리턴
+  - 내부적으로 JobName + JobKey (JobParamter의 해시값)를 가지고 DB로 부터 JobInstance 객체를 얻는다.
+
+JobInstance는 Job과 1:N 관계이다. (예로 매일 다른 JobParameter로 실행이 되기 때문에)
+
+#### JobInstance과 BATCH_JOB_INSTANCE
+
+- `JobInstance`는 `BATCH_JOB_INSTANCE` 테이블에 해당 정보가 저장이 된다. 
+- JOB_NAME (Job)과 JOB_KEY (JobParameter 해시값) 가 동일한 데이터는 중복햏서 저장할 수 없다
