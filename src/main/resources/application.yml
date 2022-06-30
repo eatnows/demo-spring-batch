@@ -29,5 +29,7 @@ spring:
       password: password
       driver-class-name: com.mysql.jdbc.Driver
   batch:
+#    job:
+#      enabled: false  # job 자동실행 기본값은 true
     jdbc:
       initialize-schema: always

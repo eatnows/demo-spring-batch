@@ -207,11 +207,72 @@ Job의 설정과 구성은 동일하지만 Job이 실행되는 시점에 처리�
 
 - 처음 시작하는 Job + JobParameter 일 경우 새로운 JobInstance를 생성
 - 이전과 동일한 Job + JobParameter 로 실행할 경우 이미 존재하는 JobInstance를 리턴
-  - 내부적으로 JobName + JobKey (JobParamter의 해시값)를 가지고 DB로 부터 JobInstance 객체를 얻는다.
+  - 내부적으로 JobName + JobKey (JobParamter의 해시값)를 가지고 DB로 부터 JobInstance 객체를 얻는다. (에러 발생)
 
-JobInstance는 Job과 1:N 관계이다. (예로 매일 다른 JobParameter로 실행이 되기 때문에)
+JobInstance는 Job과 1:N 관계이다. (예로 매일 다른 JobParameter로 실행이 되기 때문에) <br>
+동일한 JobName과 JobKey(JobParameters)를 실행하면 에러가 발생한다.
+
+```text
+Caused by: org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException: A job instance already exists and is complete for parameters={name=user1}.  If you want to run this job again, change the parameters.
+```
+
 
 #### JobInstance과 BATCH_JOB_INSTANCE
 
 - `JobInstance`는 `BATCH_JOB_INSTANCE` 테이블에 해당 정보가 저장이 된다. 
 - JOB_NAME (Job)과 JOB_KEY (JobParameter 해시값) 가 동일한 데이터는 중복햏서 저장할 수 없다
+
+
+### JobParameter
+
+`Job`을 실행할 때 파라미터를 설정해서 전달해주는 용도로 사용하는 객체이다. <br>
+JobParameter에는 Key와 Value로 구성된 Map을 포함하고 있다. 하나의 Job에 존재할 수 있는 여러개의 `JobInstance`를 구분하기 위한 용도이다.
+
+JobParameter를 생성하는 방법은 3가지가 있다.
+1. 애플리케이션 실행 시 주입하는 방법
+   - Java -jar LogBatch.jar requestData=20220630
+     - 인자로 변수를 지정해서 실행 시키면 변수의 값이 JobParameter의 값으로 저장되도록 스프링 배치가 내부적으로 처리한다
+     - ```text
+       java -jar demo-spring-batch-0.0.1-SNAPSHOT.jar name=user20 seq\(long\)=200L date\(date\)=2022/07/01 age\(double\)=19.5
+        ```
+
+2. 코드로 생성
+   - JobParameterBuilder, DefaultJobParametersConverter
+     - JobParameterBuilder를 통해서 값을 지정하고 생성할 수 있는 방법
+     - 주로 JobParameterBuilder 방법을 많이 사용한다
+3. SpEL 이용 (스프링에서 제공하는 표현식)
+   - @Value("#{jobParamter[requestDate]}"), @JobScope, @StepScope 선언 필수
+   - @Value("#{jobParamter[requestDate]}") 하면 외부로 부터 넘어온 값을 표현식에 저장
+
+
+JobParameter 는 `BATCH_JOB_EXECUTION_PARAM` 이라는 테이블에 저장이 된다 <br>
+또 JobParameter 는 `JOB_EXECUTION` 테이블과 1:N 관계이다
+
+스프링 배치에서 JobParameter의 타입은 `ParamterType` 이라는 Enum 클래스로 `STRING`, `DATE`, `LONG`, `DOUBLE` 총 4가지를 지원한다.
+
+Step에서 tasklet의 `StepContribution`와 `ChunkContext` 에서 JobParameter의 값을 참조할 수 있다.
+
+```java
+@Bean
+public Step step1() {
+        return stepBuilderFactory.get("step1")
+        .tasklet(new Tasklet() {
+                @Override
+                public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                
+                        // contribution을 이용하여 jobParameter의 값을 참조하는 방법 (사용자가 전달한 jobParameter를 참조하는 방식)
+                        JobParameters jobParameters = stepContribution.getStepExecution().getJobExecution().getJobParameters();
+                        jobParameters.getString("name");
+                        jobParameters.getLong("seq");
+                        jobParameters.getDate("date");
+                        jobParameters.getDouble("age");
+                
+                        // 동일한 값을 얻을 순 있지만 약간 다른식으로 맵 형태로 값을 가져온다 (값만 확인할 수 있는 방식)
+                        Map<String, Object> jobParameters1 = chunkContext.getStepContext().getJobParameters();
+                
+                        return RepeatStatus.FINISHED;
+                }
+        })
+        .build();
+}
+```
