@@ -276,3 +276,19 @@ public Step step1() {
         .build();
 }
 ```
+
+### JobExecution
+
+JobInstance 는 Job이 실행하게 되면 JobInstance는 오직 한 번만 실행하게 된다. (JobParameter가 동일한 내용으로 실행이 될 때) 그런데 JobExecution은 JobInstance가 실행될 때 마다 생성이 된다. <Br>
+JobExecution은 Job 실행 중에 발생한 정보들을 저장하고 있는 객체이다. (시작시간, 종료시간, 상태, 종료상태 속성)
+
+JobInstance와의 관계에서 JobExecution은 한 번 또는 여러번 실행과 생성 될 수 있다.
+- JobExecution은 `FAILED` 또는 `COMPLETED` 등의 Job의 실행 결과 상태를 가지고 있음 (Batch Status)
+  - `JobExecution`의 실행 상태 결과가 `COMPLETED` 면 JobInstance 실행이 완료된 것으로 간주해서 재 실행이 불가하다
+  - `JobExecution`의 실행 상태 결과가 `FAILED` 면 JobInstance 실행이 완료되지 않은 것으로 간주해서 재실행이 가능하다
+    - JobParameter가 동일한 값으로 job을 실행할지라도 JobInstance를 계속 실행할 수 있음
+  - `JobExecution`의 실행 상태 결과가 `COMPLETED` 될 때까지 하나의 JobInstance 내에서 여러 번 시도가 생길 수 있다
+
+`JobExecution`의 정보가 `BATCH_JOB_EXECUTION` 테이블에 저장이 된다. JobInstance 와 JobExecution의 관계는 1:N 관계로 JobInstance에 대한 성공, 실패의 내역을 가지고 있다.
+
+

@@ -12,22 +12,22 @@ import org.springframework.stereotype.Component;
 /**
  * ApplicationRunner: 스프링부트가 초기화되고 완료가 되면 가장 먼저 호출하는 클래스 (run 메서드가 호출된다)
  */
-@Component
+//@Component
 public class JobRunner implements ApplicationRunner {
 
-    @Autowired
-    private JobLauncher jobLauncher;
-
-    @Autowired
-    private Job job; // JobInstanceConfiguration에서 만든 Job bean을 주입
+//    @Autowired
+//    private JobLauncher jobLauncher;
+//
+//    @Autowired
+//    private Job job; // JobInstanceConfiguration에서 만든 Job bean을 주입
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("name", "user2")
-                .toJobParameters();
+//        JobParameters jobParameters = new JobParametersBuilder()
+//                .addString("name", "user2")
+//                .toJobParameters();
 
-        jobLauncher.run(job, jobParameters);
+//        jobLauncher.run(job, jobParameters);
     }
 }
