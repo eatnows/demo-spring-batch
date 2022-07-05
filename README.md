@@ -292,3 +292,58 @@ JobInstance와의 관계에서 JobExecution은 한 번 또는 여러번 실행�
 `JobExecution`의 정보가 `BATCH_JOB_EXECUTION` 테이블에 저장이 된다. JobInstance 와 JobExecution의 관계는 1:N 관계로 JobInstance에 대한 성공, 실패의 내역을 가지고 있다.
 
 
+
+### Step
+
+Batch job을 구성하는 독립적인 하나의 단계로서 실제 배치 처리를 정의하고 컨트롤하는데 필요한 모든 정보를 가지고 있는 도메인 객체이다. Step은 여러개를 둘 수가 있는데 각각의 Step은 독립적으로 생성되고 독립적으로 실행된다. Step 간의 데이터를 공유 등 간섭이 없다. 
+단순한 단일 태스트 뿐만 아니라 입력과 처리 그리고 출력과 관련된 복잡한 비즈니스 로직을 포함하는 모든 설정들을 담고 있다. Job의 세부작업을 Task 기반으로 설정하고 명세해 놓은 객체이다. 모든 Job은 하나 이상ㅇml step으로 구성된다
+
+- TaskletStep
+  - 가장 기본이 되는 클래스로서 Tasklet 타입의 구현체들을 제어한다.
+- PartitionStep
+  - 멀티 스레드 방식으로 Step을 여러개로 분리해서 실행한다.
+- JobStep
+  - Step 내에서 Job을 실행하도록 한다
+- FlowStep
+  - Step 내에서 Flow를 실행하도록 한다
+
+
+```java
+// 직접 생성한 Tasklet 실행
+public Step taskletStep(){
+    return this.stepBuilderFactory.get("step")
+        .tasklet(myTasklet())
+        .build();
+}
+```
+
+```java
+// ChunkOrientedTasklet 실행
+public Step taskletStep(){
+    return this.stepBuilderFactory.get("step")
+        .<Member,Member>chunk(100)
+        .reader(reader)
+        .writer(writer())
+        .build();
+}
+```
+
+```java
+// Step에서 Job을 실행
+public Step jobStep() {
+    return this.stepBuilderFactory.get("step")
+        .job(job())
+        .launcher(jobLauncher)
+        .parametersExtractor(jobParametersExtractor())  // jobParameter를 설정
+        .build();
+}
+```
+
+```java
+// Step에서 Flow를 실행
+public Step flowStep() {
+    return this.stepBuilderFactory.get("step")
+        .flow(myFlow())
+        .build();
+}
+```
