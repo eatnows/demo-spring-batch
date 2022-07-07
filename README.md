@@ -363,3 +363,9 @@ Step이 매번 시도될 때마다 생성되며 각 Step 별로 생성된다. Jo
   - JobExection과 StepExection은 1:N 관계
   - 하나의 Job에 여러개의 Step으로 구성했을 경우 각 StepExecution은 하나의 jobExecution을 부모로 갖는다.
 
+
+
+### StepContribution
+
+청크 프로세스의 변경 사항을 버퍼링 한 후 StepExecution 상태를 업데이트하는 도메인 객체이다. 청크 커밋 직전에 StepExection의 apply 메서드를 호출하여 상태를 업데이트 한다. <br>
+일반적으로 StepExecution은 BatchStatus 값과 ExistStatus 값 두개를 가지는데 ExistStatus의 기본 종료코드 외 사용자 정의 종료코드를 생성해서 적용할 수 있다.
