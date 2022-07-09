@@ -369,3 +369,16 @@ Step이 매번 시도될 때마다 생성되며 각 Step 별로 생성된다. Jo
 
 청크 프로세스의 변경 사항을 버퍼링 한 후 StepExecution 상태를 업데이트하는 도메인 객체이다. 청크 커밋 직전에 StepExection의 apply 메서드를 호출하여 상태를 업데이트 한다. <br>
 일반적으로 StepExecution은 BatchStatus 값과 ExistStatus 값 두개를 가지는데 ExistStatus의 기본 종료코드 외 사용자 정의 종료코드를 생성해서 적용할 수 있다.
+
+
+### ExecutionContext
+
+Job이나 Step에 포함된 도메인은 아니다. 프레임워크에서 유지 및 관리하는 key/value 로 된 컬렉션 (일종의 map)으로 StepExecution 또는 JobExecution 객체의 상태를 저장하는 공유 객체이다. DB에 직렬화한 값으로 저장된다. `{"key":"value"}`
+<br> 공유 객체라는 말은 여러 객체에서 ExecutionContext 참조해서 공유할 수 있다는 의미이다. 공유 범위로는 아래와 같다.
+
+- Step 범위 - 각 Step의 StepExecution에 저장되며 Step 간 서로 공유 안됨
+- Job 범위 - 각 Job의 JobExecution에 저장되며 Job 간 서로 공유는 되지 않지만 해당 Job의 Step 간 서로 공유가 가능하다
+
+Job이 재시작 될 때 이미 처리한 row 데이터는 건너뛰고 이후로 수행하도록 할 때 상태 정보를 활용한다.
+
+BATCH_JOB_EXECUTION_CONTEXT는 JobExecution의 ExecutionContext가 저장되어 있는 테이블이고 반대로 Step은 BATCH_STEP_EXECUTION_CONTEXT에 저장된다.
