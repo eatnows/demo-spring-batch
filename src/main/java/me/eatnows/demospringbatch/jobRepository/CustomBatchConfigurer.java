@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
-@Configuration
+//@Configuration
 public class CustomBatchConfigurer extends BasicBatchConfigurer {
 
     private final DataSource dataSource;
@@ -26,7 +26,7 @@ public class CustomBatchConfigurer extends BasicBatchConfigurer {
         factory.setDataSource(dataSource);
         factory.setTransactionManager(getTransactionManager());
         factory.setIsolationLevelForCreate("ISOLATION_READ_COMMITTED");
-        factory.setTablePrefix("SYSTEM_");
+        factory.setTablePrefix("SYSTEM_"); // SYSTEM_ 으로 시작하는 테이블을 검색함 없으면 오류
 
         return factory.getObject();
     }

@@ -400,3 +400,23 @@ BATCH_JOB_EXECUTION_CONTEXT는 JobExecution의 ExecutionContext가 저장되어 
   1. In Memory 방식으로 설정 - MapJobRepositoryFactoryBean
      - 성능 등의 이유로 도메인 오브젝트를 굳이 데이터베이스에 저장하고 싶지 않을 경우
      - 보통 Test나 프로토타입의 빠른 개발이 필요할 때 사용한다.
+
+
+
+### JobLauncher
+
+배치 Job을 실행시키는 역할을 한다. 실행을 할 때 Job과 Job Parameters를 인자로 받으며 요청된 배치 작업을 수행한 후 최종 client 에게 JobExecution을 반환한다 <br>
+스프링 부트 배치가 구동이 되면 JobLauncher 빈이 자동으로 생성된다.
+
+#### Job 실행
+
+- JobLauncher.run(Job, JobParameters)
+- 스프링 부트 배치에서는 JobLauncherApplicationRunner 가 자동적으로 JobLauncher를 실행시킨다.
+  - 동기적 실행
+    - taskExecutor를 SyncTaskExecutor로 설정할 경우 (기본값은 SyncTaskExecutor) 
+    - JobExecution을 획득하고 배치 처리를 최종 완료한 이후 Client에게 JobExecution을 반환
+    - 스케쥴러에 의한 배치처리에 적합 하다 - 배치처리시간이 길어도 상관없을 경우
+  - 비 동기적 실행
+    - taskExecutor 가 SimpleAsyncTaskExecutor로 설정할 경우
+    - JobExecution을 획득한 후 Client에게 바로 JobExecution을 반환하고 배치처리를 완료한다
+    - HTTP 요청에 의한 배치처리에 적합하다 - 배치처리 시간이 길 경우 응답이 늦어지지 않도록 한다

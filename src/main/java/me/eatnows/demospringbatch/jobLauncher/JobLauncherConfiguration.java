@@ -1,10 +1,6 @@
-package me.eatnows.demospringbatch.jobRepository;
+package me.eatnows.demospringbatch.jobLauncher;
 
 import lombok.RequiredArgsConstructor;
-import me.eatnows.demospringbatch.executionContext.ExecutionContextTasklet1;
-import me.eatnows.demospringbatch.executionContext.ExecutionContextTasklet2;
-import me.eatnows.demospringbatch.executionContext.ExecutionContextTasklet3;
-import me.eatnows.demospringbatch.executionContext.ExecutionContextTasklet4;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
@@ -19,34 +15,34 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
-public class JobRepositoryConfiguration {
+public class JobLauncherConfiguration {
+
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final JobExecutionListener jobRepositoryListener;
 
 
-//    @Bean
+    @Bean
     public Job batchJob() {
-        return this.jobBuilderFactory.get("batchJob")
+        return this.jobBuilderFactory.get("Job")
                 .start(step1())
                 .next(step2())
-                .listener(jobRepositoryListener) // listener 추가
                 .build();
     }
 
-//    @Bean
+    @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                        Thread.sleep(3000); // 비동기 방식은 3초를 기다리기 전에 요청에 응답을 바로 먼저 해버린다
                         return RepeatStatus.FINISHED;
                     }
                 })
                 .build();
     }
 
-//    @Bean
+    @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
                 .tasklet((contribution, chunckContext) -> null)
