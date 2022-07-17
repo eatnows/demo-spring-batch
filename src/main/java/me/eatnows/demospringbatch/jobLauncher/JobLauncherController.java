@@ -18,16 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 
-@RestController
+//@RestController
 public class JobLauncherController {
 
-    @Autowired
+//    @Autowired
     private Job job;
 
-    @Autowired
+//    @Autowired
     private JobLauncher jobLauncher;
 
-    @Autowired
+//    @Autowired
     private BasicBatchConfigurer basicBatchConfigurer;
 
     @PostMapping("/batch")
