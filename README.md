@@ -454,4 +454,24 @@ Job을 실행할 때 여러가지 옵션을 설정할 수 있는데 여러가지
 --job.name=helloJob,simpleJob 
 ```
 
-하나 이상의 job을 실행할 경우 `,`로 구분해서 입력한
+하나 이상의 job을 실행할 경우 `,`로 구분해서 입력한다
+
+
+### JobBuilderFactory
+
+JobBuilder를 생성하는 팩토리 클래스로서 get(String name) 메서드를 제공해준다.
+jobBuilderFactory.get("jobName")
+- `jobName`은 스프링 배치가 Job을 실행시킬 때 참조하는 Job의 이름으로 DB에도 해당 이름으로 저장된다
+
+### JobBuilder
+
+- Job을 구성하는 설정 조건에 따라 두 개의 하위 빌더 클래스를 생성하고 실제 Job 생성을 위임한다. (Job을 생성하는 클래스가 아님)
+
+Job을 직접 생성하는 하위 클래스는 아래와 같다.
+
+1. SimpleJobBuilder
+  - SimpleJob을 생성하는 Builder 클래스 
+  - Job 실행과 관련된 여러 설정 API 제공
+2. FlowJobBuilder
+  - FlowJob을 생성하는 Builder 클래스
+  - 내부적으로 FlowBuilder 를 반환함으로써 Flow 실행과 관련된 여러 설정 API를 제공한다
