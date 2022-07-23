@@ -475,3 +475,26 @@ Job을 직접 생성하는 하위 클래스는 아래와 같다.
 2. FlowJobBuilder
   - FlowJob을 생성하는 Builder 클래스
   - 내부적으로 FlowBuilder 를 반환함으로써 Flow 실행과 관련된 여러 설정 API를 제공한다
+
+
+
+### SimpleJob
+
+- SimpleJob은 Step을 실행시키는 Job의 구현체
+- SimpleJobBuilder에 의해 생성이 된다
+- 여러 단계의 Step으로 구성할 수 있으며 Step을 순차적으로 실행
+- 모든 Step의 실행이 성공적으로 완료되어야 Job이 성공적으로 완료된다
+- 맨 마지막에 실행한 Step의 BatchStatus가 Job의 최종 BatchStatus가 된다
+
+```java
+public Job batchJob() {
+    return jobBuilderFactory.get("batchJob")    // JobBuilder를 생성하는 팩토리, Job의 이름을 매개변수로 받음
+        .start(Step)                           // 처음 실행할 Step 설정, 최초 한번 설정, 이 메서드를 실행하면 SimpleJobBuilder 반환     
+        .next(Step)                             // 다음에 실행할 Step 설정, 횟수 제한이 없고 모든 next()의 Step이 종료되면 Job이 종료된다
+        .incrementer(JobParametersIncrementer)   // JobParameter의 값을 자동으로 증가해 주는 JobParametersIncrementer 설정
+        .preventRestart(true)                   // Job의 재시작 가능 여부 설정, 기본값은 true
+        .validator(JobParameterValidator)       // JobParameter를 실행하기 전에 올바른 구성이 되었는지 검증하는 JobParametersValidator 설정
+        .listener(JobExecutionListener)         // Job 라이프 사이클의 특정 시점에 콜백을 제공받도록 JobExecutionListener 설정
+        .build();                               // SimpleJob 생성
+}
+```
