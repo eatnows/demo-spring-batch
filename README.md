@@ -498,3 +498,15 @@ public Job batchJob() {
         .build();                               // SimpleJob 생성
 }
 ```
+
+
+
+#### validator()
+
+Job실행에 꼭 필요한 JobParameter를 검증하는 용도로 사용되며 검증에 실패하면 Job을 실행하지 않는다 <br>
+DefaultJobParametersValidator 구현체를 지원하며, 좀 더 복잡한 제약 조건이 있다면 인터페이스를 직접 구현할 수도 있다 (parameter의 key로 검증하는 경우에 사용하면 좋다)
+
+validator는 총 두번 실행된다
+1. Job이 수행되기전에 JobRepository의 기능이 수행가지 전 validate를 실행
+2. Job이 실행되기 전에 validate 실행
+
