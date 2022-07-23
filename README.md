@@ -510,3 +510,11 @@ validator는 총 두번 실행된다
 1. Job이 수행되기전에 JobRepository의 기능이 수행가지 전 validate를 실행
 2. Job이 실행되기 전에 validate 실행
 
+
+#### preventRestart()
+
+- job의 재시작 여부를 설정 (Job은 실패했을 경우에만 재시작할 수 있음)
+- 기본값은 true이며 false로 설정 시 Job의 재시작을 지원하지 않는다 라는 의미이다 (Job이 실패하더라도 재 시작할 수 없음)
+- Job이 실패해도 재시작이 안되며 Job을 재시작하려고 하면 JobParameterException이 발생된다
+- 재시작과 관련 있는 기능으로 Job을 처음 실행하는 것 과는 관련없음
+- `perventRestart()` 를 추가하기만 해도 재시작을 하지 않겠다는 의미 (restartable의 값이 false로 변경)
