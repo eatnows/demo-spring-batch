@@ -17,7 +17,7 @@ public class IncrementerConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Bean
+//    @Bean
     public Job batchJob() {
         return jobBuilderFactory.get("batchJob")
                 .start(step1())
@@ -27,7 +27,7 @@ public class IncrementerConfiguration {
                 .build();
     }
 
-    @Bean
+//    @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .tasklet(((contribution, chunkContext) -> {
@@ -37,7 +37,7 @@ public class IncrementerConfiguration {
                 .build();
     }
 
-    @Bean
+//    @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
                 .tasklet(((contribution, chunkContext) -> {

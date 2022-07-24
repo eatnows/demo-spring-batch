@@ -525,3 +525,27 @@ validator는 총 두번 실행된다
 - JobParameters에서 필요한 값을 증가시켜 다음에 사용될 JobParameters 오브젝트를 반환
 - 기존의 JobParameter 변경없이 Job을 여러 번 시작하고자 할 때 사용한다
 - RunIdIncrementer 구현체를 지원하고 인터페이스를 직접 구현할 수도 있다
+
+
+
+#### StepBuilderFactory 
+
+- StepBuilder를 생성하는 팩토리 클래스로 get(String name) 메서드를 제공한다
+- StepBuilderFactory.get("stepName") (stepName으로 Step을 생성)
+
+
+#### StepBuilder
+
+- Step을 구성하는 설정 조건에 따라 다섯 개의 하위 빌더 클래스를 생성하고 실제 Step 생성을 위임한다
+- **TaskletStepBuilder**
+  - TaskletStep 을 생성하는 기본 빌더 클래스 (Tasklet interfcae를 구현한 구현체를 실행)
+- **SimpleStepBuilder**
+  - TaskletStep 을 생성하며 내부적으로 청크기반의 작업을 처리하는 ChunkOrientedTasklet 클래스를 생성한다
+- **PartitionStepBuilder**
+  - PartitionStep 을 생성하며 멀티 스레드 방식으로 Job을 실행한다
+- **JobStepBuilder**
+  - JobStep 을 생성하야 Step 안에서 Job을 실행한다
+- **FlowStepBuilder**
+  - FlowStep 을 생성하여 Step 안에서 Flow를 실행한다
+  
+`JobRepository` 는 빌더 클래스를 통해 Step 객체에 전달되어 메타데이터를 기록하는데 사용된다
