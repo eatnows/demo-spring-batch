@@ -518,3 +518,10 @@ validator는 총 두번 실행된다
 - Job이 실패해도 재시작이 안되며 Job을 재시작하려고 하면 JobParameterException이 발생된다
 - 재시작과 관련 있는 기능으로 Job을 처음 실행하는 것 과는 관련없음
 - `perventRestart()` 를 추가하기만 해도 재시작을 하지 않겠다는 의미 (restartable의 값이 false로 변경)
+
+
+#### incrementer()
+
+- JobParameters에서 필요한 값을 증가시켜 다음에 사용될 JobParameters 오브젝트를 반환
+- 기존의 JobParameter 변경없이 Job을 여러 번 시작하고자 할 때 사용한다
+- RunIdIncrementer 구현체를 지원하고 인터페이스를 직접 구현할 수도 있다
