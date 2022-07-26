@@ -549,3 +549,33 @@ validator는 총 두번 실행된다
   - FlowStep 을 생성하여 Step 안에서 Flow를 실행한다
   
 `JobRepository` 는 빌더 클래스를 통해 Step 객체에 전달되어 메타데이터를 기록하는데 사용된다
+
+
+
+
+#### tasklet
+
+- 스프링 배치에서 제공하는 Step의 구현체로 Tasklet을 실행시키는 도메인 객체이다
+- RepeatTemplate를 사용해서 Tasklet의 구문을 트랜잭션 경계 내에서 반복해서 실행한다
+- Task 기반과 Chunk 기반으로 나누어서 Tasklet을 실행한다
+
+스프링 배치에서 Step의 실행 단위는 크게 2가지로 나뉜다
+1. Chunk 기반
+  - 하나의 큰 덩어리를 n개씩 나눠서 실행한다는 의미로 대량 처리를 하는 경우 효과적으로 설계되어있다.
+  - ItemReader, ItemProcessor, ItemWriter를 사용하며 청크 기반 전용 Tasklet인 ChunkOrientedTasklet 구현체가 제공된다.
+1. Task 기반
+   - ItemReader와 ItemWriter와 같은 청크 기반의 작업보다 단일 작업 기반으로 처리되는 것이 더 효율적인 경우에 사용한다.
+   - 주로 Tasklet 구현체를 만들어 사용한다
+   - 대량 처리를 하는 경우 chunk 기반에 비해 더 복잡한 구현이 필요하다
+
+```java
+public Step batchStep() {
+    return stepBuilderFactory.get("batchStep")   // StepBuilder 를 생성하는 팩토리, Step의 이름을 매개변수로 받는다
+        .tasklet(Tasklet)                   // Tasklet 클래스 설정, 이 메서드를 실행하면 TaskletStepBuilder 를 반환 
+        .startLimit(10)                     // Step의 실행 횟수를 설정, 설정한 만큼 실행이되고 초과시 오류를 발생, 기본값은 INTEGER.MAX_VALUE
+        .allowStartIfComplete(true)         // Step의 성공, 실패와 상관없이 항상 Step을 실행하기 위한 설정 
+        .listener(StepExecutionListener)    // Step 라이프 사이클의 특정 시점에 콜백을 제공받도록 StepExecutionListener 설정
+        .build();                           // TaskletStep을 생성
+}
+
+```
