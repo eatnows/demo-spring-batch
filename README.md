@@ -579,3 +579,17 @@ public Step batchStep() {
 }
 
 ```
+
+
+
+#### tasklet()
+
+- Step 내에서 구성되고 실행되는 도메인 객체로 주로 단일 task를 수행하기 위해 사용한다
+- TaskeltStep 에 의해 반복적으로 수행되며 반환값에 따라 계속 수행 혹은 종료한다
+  - RepeatStatus - Tasklet 의 반복 여부 상태값
+    - RepeatStatus.FINISHED - Tasklet 종료, RepeatStatus 를 null 로 반환하면 RepeatStatus.FINISHED로 해석된다
+    - RepeatStatus.CONTINUABLE - Tasklet 반복
+    - RepeatStatus.FINISHED 가 리턴된거나 실패 예외가 던져지기 전까지 TaskletStep 에 의해 while 문 안에서 반복적으로 호출된다. (무한루프)
+- 익명 클래스 혹은 구현 클래스를 만들어서 사용한다. (일반 적으로는 구현 클래스를 만들어서 사용을 많이함)
+- 이 메서드를 실행하게 되면 TaskletStepBuilder 가 반환되어 관련 API를 설정할 수 있다.
+- Step 에 오직 하나의 Tasklet 설정이 가능하며 두개 이상을 설정했을 경우 마지막 설정한 객체가 실행된다.
