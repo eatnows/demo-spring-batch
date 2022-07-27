@@ -31,7 +31,7 @@ spring:
   batch:
     job:
       enabled: true  # job 자동실행 기본값은 true
-      names: ${job.name:NONE}  # ${job.name:NONE}: 외부에서 Job의 이름을 실행시점에 파라미터로 전달해서 바인딩 되도록 --job.name=batchJob1 으로 아규먼트를 설정, 아무것도 넣어주지 않으면 NONE이란 이름으로 실행
+#      names: ${job.name:NONE}  # ${job.name:NONE}: 외부에서 Job의 이름을 실행시점에 파라미터로 전달해서 바인딩 되도록 --job.name=batchJob1 으로 아규먼트를 설정, 아무것도 넣어주지 않으면 NONE이란 이름으로 실행
     jdbc:
       initialize-schema: always   # 스키마 생성 관련 옵션
 #      table-prefix: BATCH_   # (기본값은 BATCH_) 해당 테이블 prefix로 쿼리가 실행됨

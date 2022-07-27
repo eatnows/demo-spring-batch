@@ -593,3 +593,20 @@ public Step batchStep() {
 - 익명 클래스 혹은 구현 클래스를 만들어서 사용한다. (일반 적으로는 구현 클래스를 만들어서 사용을 많이함)
 - 이 메서드를 실행하게 되면 TaskletStepBuilder 가 반환되어 관련 API를 설정할 수 있다.
 - Step 에 오직 하나의 Tasklet 설정이 가능하며 두개 이상을 설정했을 경우 마지막 설정한 객체가 실행된다.
+
+
+
+#### startLimit()
+
+- Step의 실행 횟수를 조정할 수 있다
+- Step마다 설정할 수 있다
+- 설정 값을 초과해서 다시 실행하려고 하면 StartLimitExceededException이 발생
+- start-limit의 디폴트 값은 Integer.MAX_VALUE
+
+
+#### allowStartIfComplete()
+
+- 재시작 가능한 job에서 Step의 이전 성공 여부와 상관없이 항상 step을 실행하기 위한 설정
+- 실행 마다 유효성을 검증하는 Step이나 사전 작업이 꼭 필요한 Step 등은 성공이 되었어도 그때그떄마다 실행이 되어야하는 작업에 사용됨
+- 기본적으로 COMPLETED 상태를 가진 Step은 Job 재 시작 시 실행하지 않고 스킵한다
+- allow-start-if-complete가 "true"로 설정된 step은 항상 실행한다
