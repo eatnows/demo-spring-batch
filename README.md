@@ -610,3 +610,26 @@ public Step batchStep() {
 - 실행 마다 유효성을 검증하는 Step이나 사전 작업이 꼭 필요한 Step 등은 성공이 되었어도 그때그떄마다 실행이 되어야하는 작업에 사용됨
 - 기본적으로 COMPLETED 상태를 가진 Step은 Job 재 시작 시 실행하지 않고 스킵한다
 - allow-start-if-complete가 "true"로 설정된 step은 항상 실행한다
+
+
+
+#### JobStep
+
+- Job에 속하는 Step 중 외부의 Job을 포함하고 있는 Step
+- 외부의 Job이 실패하면 해당 Step이 실패하므로 결국 최종 기본 Job도 실패한다
+- 모든 메타데이터는 기본 Job과 외부 Job 별로 각각 저장된다
+- 커다란 시스템을 작은 모듈로 쪼개고 job의 흐름을 관리하고자 할 때 사용할 수 잇다.
+
+```text
+StepBuilderFactory -> StepBuilder -> JobStepBuilder -> JobStep
+```
+
+```java
+public Step jobStep() {
+    return stepBuilderFactory.get("jobStep")         // StepBuilder를 생성하는 팩토리, Step의 이름을 매개변수로 받음
+        .job(Job)                                    // JobStep 내에서 실행될 Job 설정, JobStepBuilder반환
+        .launcher(JobLauncher)                       // Job을 실행할 JobLauncher설정
+        .parametersExtractor(JobParametersExtractor) //  Step의 executionContext를 Job이 실행되는 데 필요한 JobParameters로 변환
+        .build();                                    // JobStep을 생성
+}
+```
