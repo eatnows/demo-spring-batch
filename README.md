@@ -654,7 +654,7 @@ JobBuilderFactory -> JobBuilder -> JobFlowBuilder -> FlowBuilder -> FlowJob
 public Job batchJob() {
     return jobBuilderFactory.get("batchJob")
         .start(Step)                                // Flow를 시작하는 Step을 설정
-        .on(String pattern)                         // Step의 실행 결과로 돌려받는 종료상태(ExitStatus) 를 캐치하여 매칭하는 패턴, TransitionBuilder를 반환
+        .on(String pattern)                         // Step의 실행 결과로 돌려받는 종료상태(ExitStatus) 를 캐치하여 매칭하는 패턴, TransitionBuilder를 반환 (.start(Step)의 경우 SimpleJobBuilder를 반환하게 되지만 .on()와 함께라면 JobFlowBuilder를 반환한다)
         .to(Step)                                   // 다음으로 이동할 Step을 지정 (on 다음에 어떻게 할 것이냐)
         .step() / fail() / end() / stopAndRestart() // Flow를 중지/ 실패/ 종료 하도록 (Flow 자체가 종료)
         .from(Step)                                 // 이전 단계에서 정의한 Step의 Flow를 추가적으로 정의한다
@@ -663,3 +663,5 @@ public Job batchJob() {
         .build()                                    // FlowJob을 생성하고 flow 핖드에 SimpleFlow 를 저장 
 }
 ```
+
+flow라 할지라도 start()와 next()로만 구성되어 있으면 step이 실패할 경우 job 전체가 실패된다.
