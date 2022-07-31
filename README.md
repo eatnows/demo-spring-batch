@@ -636,7 +636,7 @@ public Step jobStep() {
 
 
 
-### FlowJob
+## FlowJob
 
 - Step을 순차적으로만 구성하는 것이 아니고 특정한 상태에 따라 흐름을 전환호도록 구성할 수 있다.
   - Step이 실패 하더라도 Job은 실패로 끝나지 않도록 해야하는 경우
@@ -665,3 +665,49 @@ public Job batchJob() {
 ```
 
 flow라 할지라도 start()와 next()로만 구성되어 있으면 step이 실패할 경우 job 전체가 실패된다.
+
+
+
+### Transition
+
+전환한다, 전이된다라는 의미를 가진다, 조건에 따라서 Job이 실행되고 Step이 실행될 때 해당 흐름들을 A 또는 B 또는 C로 전환시킬 수 있는 기능을 가지고 있다. (혹은 A의 상태에 따라 B의 흐름으로 넘어간다던지) 
+
+
+#### BatchStatus
+
+JobExecution과 StepExecution의 속성으로 Job과 Step의 종료 후 최종 결과 상태가 무엇인지 정의
+
+- **SimpleJob**
+  - 마지막 Step의 BatchStatus값을 Job의 최종 BatchStatus 값으로 반영
+    - (Step이 실패할 경우 해당 Step이 마지막 Step이 된다)
+- **FlowJob**
+  - Flow(SimpleFlow) 내 Step의 ExitStatus 값을 FlowExecutionStatus 값으로 저장
+  - 마지막 Flow의 FlowExecutionStatus 값을 Job의 최종 BatchStatus 값으로 반영
+
+BatchStatus의 상태값 <br>
+`COMPLETED`, `STARTING`, `STARTED`, `STOPPING`, `STOPPED`, `FAILED`, `ABANDONED`, `UNKNOWN`
+- `ABANDONED`: 처리를 완료했지만 성공하지 못한 단계와 재시작 시 건더 뛰어야하는 단계 (일반적으로 실패하면 `FAILED` 단계로 재시작이 가능하지만 `ABANDONED`는 실패한건 맞지만 재시작이 안된다)
+
+
+#### ExitStatus
+
+- JobExecution과 StepExecution의 속성으로 Job과 Step의 실행 후 어떤 상태로 종료되었는지 정의
+- 기본적으로 ExitStatus는 BatchStatus와 동일한 값으로 설정이 된다
+
+- SimpleJob
+  - 마지막 Step의 ExitStatus 값을 Job의 최종 ExitStatus 값으로 반영
+- FlowJob
+  - Flow 내 Step의 ExitStatus 값을 FlowExecutionStatus 값으로 저장
+  - 마지막 Flow의 FlowExecutionStatus 값을 Job의 최종 ExitStatus 값으로 반영
+
+`UNKNOWN`, `EXECUTING`, `COMPLETED`, `NOOP`, `FAILED`, `STOPPED`
+
+
+#### FlowExecutionStatus
+
+- FlowExecution의 속성으로 Flow의 실행 후 최종 결과 상태가 무엇인지 정의
+- Flow 내 Step이 실행되고 나서 ExitStatus 값을 FlowExecutionStatus 값으로 저장
+- FlowJob의 배치 결과 상태에 관여함
+- `COMPLETED`, `STOPPED`, `FAILED`, `UNKNOWN`
+
+
