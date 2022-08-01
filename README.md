@@ -711,3 +711,43 @@ BatchStatus의 상태값 <br>
 - `COMPLETED`, `STOPPED`, `FAILED`, `UNKNOWN`
 
 
+#### Transition
+
+- Flow 내 Step의 조건부 전환(전이)를 정의함
+- Job의 API 설정에서 on(String pattern) 메서드를 호출하면 TransitionBuilder가 반환되어 Transition Flow를 구성할 수 있다
+- Step의 종료상태가(ExitStatus) 어떤 pattern 과도 매칭되지 않으면 스프링 배치에서 예외를 발생하고 Job은 실패한다
+- transition은 구체적인 것부터 그렇지 않은 순서로 적용된다
+
+
+- on(String pattern)
+  - Step의 실행 결과로 돌려받는 종료상태(ExitStatus)와 매칭되는 패턴 스키마, BatchStatus와 매칭되는 것이 아니다
+  - pattern과 ExitStatus 와 매칭이되면 다음으로 실행할 Step을 지정할 수 있다.
+  - 특수문자는 두 가지만 허용
+    - `*`: 0개 이상의 문자와 매칭,모든 ExitStatus와 매칭된다.
+    - `?`: 정확히 1개의 문자와 매칭
+    - 예) "c*t"는 "cat"과 "count"에 매칭이 되고, "c?t"는 "cat"에는 매칭되지만 "count"에는 매치되지 않는다
+- to()
+  - 다음으로 실행할 단계를 지정
+- from()
+  - 이전 단계에서 정의한 Transition을 새롭게 추가 정의한다
+
+Flow가 실행되면 FlowExecutionStatus에 상태값이 저장되고 최종적으로 Job의 BatchStatus와 ExitStatus에 반영된다 <br>
+Step의 BatchStatus 및 ExitStatus에는 아무런 영향을 주지 않고 Job의 상태만을 변경한다
+
+- stop()
+  - FlowExecutionStatus가 `STOPPED` 상태로 종료되는 transition
+  - Job의 BatchStatus와 ExitStatus가 `STOPPED` 로 **종료**가된다
+- fail()
+  - FlowExecutionStatus가 `FAILED` 상태로 종료되는 transition
+  - Job의 BatchStatus와 ExitStatus가 `FAILED`로 종료된다
+- end()
+  - FlowExecutionStatus가 `COMPLETED` 상태로 종료되는 transition
+  - Job의 BatchStatus와 ExitStatus가 `COMPLETED` 로 종료된다
+  - Step의 ExitStatus가 FAILED 이더라도 Job의 BatchStatus 가 COMPLETED로 종료되하도록 가능하며 이 때 Job의 재시작은 불가능하다
+- stopAndRestart(Step or Flow or JobExecutionDecider)
+  - stop() transition 과 기본 흐름은 동일
+  - 특정 step에서 작업을 중단하도록 설정하면 중단 이전의 Step만 COMPLETED 저장이 되고 이후의 Step은 실행되지 않고 STOPPED 상태로 Job이 종료된다
+  - Job이 다시 실행됐을 때 실행해야 할 step을 restart 인자로 넘기면 이전에 COMPLETED로 저장된 step은 건너뛰고 중단 이후 Step부터 시작한다
+
+
+
