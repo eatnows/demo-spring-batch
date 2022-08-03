@@ -759,6 +759,12 @@ Step의 BatchStatus 및 ExitStatus에는 아무런 영향을 주지 않고 Job�
 
 
 
+#### JobExecutionDecider
+
+- ExitStatus를 조작하거나 StepExecutionListener를 등록할 필요 없이 Transition 처리를 위한 전용 클래스
+- Step 과 Transition 역할을 명확히 분리해서 설정할 수 있다
+- Step의 ExitStatus가 아닌 JobExecutionDecider 의 FlowExecutionStatus 상태값을 새롭게 설정해서 반환한다
+
 
 
 
