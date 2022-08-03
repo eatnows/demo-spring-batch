@@ -751,3 +751,14 @@ Step의 BatchStatus 및 ExitStatus에는 아무런 영향을 주지 않고 Job�
 
 
 
+#### Custom ExitStatus
+
+- ExitStatus에 존재하지 않는 exitCode를 새롭게 정의해서 설정
+- StepExecutionListener의 afterStep() 메서드에서 Custom exitCode 생성 후 새로운 ExitStatus 반환
+- Step 실행 후 완료 시점에서 현재 exitCode를 사용자 정의 exitCode로 수정할 수 있다
+
+
+
+
+
+
