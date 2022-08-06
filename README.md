@@ -767,4 +767,14 @@ Step의 BatchStatus 및 ExitStatus에는 아무런 영향을 주지 않고 Job�
 
 
 
+#### SimpleFlow 
+
+- 스프링 배치에서 제공하는 Flow의 구현체로서 각 요소 (Step, FLow JobExecutionDecider) 들을 담고 있는 State를 실행시키는 도메인 객체이다
+- FlowBuilder 를 사용해서 생성하며 Transition(조건 흐름을 구성할 수 있는 요소) 과 조합하여 여러개의 Flow 및 중첩 Flow 를 만들어 Job 을 구성할 수 있다
+
+
+
+
+
+
 
