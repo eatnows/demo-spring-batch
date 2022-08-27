@@ -774,6 +774,9 @@ Step의 BatchStatus 및 ExitStatus에는 아무런 영향을 주지 않고 Job�
 
 
 
+### FlowStep
+
+Step 내에 Flow를 할당하여 실행시키는 도메인 객체 FlowStep 의 BatchStatus 와 ExitStatus 는 Flow의 최종 상태값에 따라 결정된 
 
 
 
