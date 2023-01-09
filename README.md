@@ -780,4 +780,29 @@ Step 내에 Flow를 할당하여 실행시키는 도메인 객체 FlowStep 의 B
 
 
 
+#### Scope
+
+- 스프링 컨테이너에서 빈이 관리되는 범위
+- singleton(메모리에 하나에 객체만 올라가서 참조), prototype(객체가 참조될 때 마다 생성), request(요청과 응답에 대한 생명주기를 가짐), session(사용자의 세션범위), application(글로벌한 특징) 있으며 기본은 singleton으로 생성된다
+
+#### 스프링 배치 스코프
+
+@JobScope, @StepScope
+- Job과 Step의 빈 생성과 실행에 관여하는 스코프
+- 프록시 모드를 기본값으로 하는 스코프 - @Scope(value = "job", proxyMode = ScopedProxyMode.TARGET_CLASS)
+- 해당 스코프가 선언되면 빈이 생성이 애플리케이션 구동시점이 아닌 빈의 실행시점에 이루어진다
+  - @Values를 주입해서 빙늬 실행 시점에 값을 참조할 수 있으며 일종의 Lazy Binding이 가능해 진다.
+  - @Value("#{jobParameters[파라미터명]}"), @Value("#{jobExecutionContext[파라미터명]}"), @Value("#{stepExecutionContext[파라미터명]}")
+  - @Values를 사용할 경우 빈 선언문에 @JobScope, @StepScope를 정의하지 않으면 오류를 발생하므로 반드시 선언해야 한다
+- 프록시 모드로 빈이 선언되기 때문에 애플리케이션 구동시점에는 빈의 프록시 객체가 생성되어 실행 시점에 실제 빈을 호출해 준다
+- 병렬처리 시 각 스레드 마다 생성된 스코프 빈이 할당되기 떄문에 스레드에 안전하게 실행이 가능하다
+
+#### @JobScope
+- Step 선언문에 정의한다 (Step 빈을 만들 때 위에 추가하면됨)
+- @Value : jobParameter, jobExecutionContext 만 사용가능
+
+
+#### @StepScope
+- Tasklet이나 ItemReader, ItemWriter, ItemProcessor 선언문에 정의한다
+- @Value : jobParameter, jobExecutionContext, stepExecutionContext 사용가능
 
